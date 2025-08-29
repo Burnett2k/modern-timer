@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { TimerDisplay } from './components/TimerDisplay'
 import { TimerControls } from './components/TimerControls'
+import { SessionGoal } from './components/SessionGoal'
 import { TimerStatus } from './types/timer'
 import { TimerManager } from './utils/TimerManager'
 import './App.css'
@@ -10,6 +11,7 @@ function App() {
   const [userSetDuration, setUserSetDuration] = useState(25 * 60)
   const [isCompleted, setIsCompleted] = useState(false)
   const [status, setStatus] = useState<TimerStatus>(TimerStatus.STOPPED)
+  const [sessionGoal, setSessionGoal] = useState('')
   const timerManagerRef = useRef<TimerManager | null>(null)
 
   useEffect(() => {
@@ -76,6 +78,10 @@ function App() {
     <>
       <div>
         <h1>Modern Timer</h1>
+        <SessionGoal
+          goal={sessionGoal}
+          onGoalChange={setSessionGoal}
+        />
         <TimerDisplay 
           timeRemaining={timeRemaining} 
           isCompleted={isCompleted}
