@@ -1,15 +1,15 @@
-import { useEffect, useState, KeyboardEvent } from 'react';
+import { useState, KeyboardEvent } from 'react';
 import { TimerStatus } from '../types/timer';
 
 interface TimerDisplayProps {
   timeRemaining: number;
   isCompleted: boolean;
   status: TimerStatus;
+  showTimeUp: boolean;
   onTimeChange?: (hours: number, minutes: number, seconds: number) => void;
 }
 
-export function TimerDisplay({ timeRemaining, isCompleted, status, onTimeChange }: TimerDisplayProps) {
-  const [showTimeUp, setShowTimeUp] = useState(false);
+export function TimerDisplay({ timeRemaining, isCompleted, status, showTimeUp, onTimeChange }: TimerDisplayProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editHours, setEditHours] = useState('00');
   const [editMinutes, setEditMinutes] = useState('25');
@@ -29,16 +29,6 @@ export function TimerDisplay({ timeRemaining, isCompleted, status, onTimeChange 
     return { hours, minutes, secs };
   };
 
-  useEffect(() => {
-    if (isCompleted) {
-      const interval = setInterval(() => {
-        setShowTimeUp(prev => !prev);
-      }, 1000);
-      return () => clearInterval(interval);
-    } else {
-      setShowTimeUp(false);
-    }
-  }, [isCompleted]);
 
   const handleDisplayClick = () => {
     if (status === TimerStatus.STOPPED && !isCompleted) {
@@ -117,13 +107,17 @@ export function TimerDisplay({ timeRemaining, isCompleted, status, onTimeChange 
     );
   }
 
+  const isEditable = status === TimerStatus.STOPPED && !isCompleted;
+
   return (
     <div className="timer-display">
       <div 
         className="time-text" 
         onClick={handleDisplayClick}
         style={{ 
-          cursor: status === TimerStatus.STOPPED && !isCompleted ? 'pointer' : 'default' 
+          cursor: isEditable ? 'pointer' : 'default',
+          fontSize: '48px',
+          fontFamily: 'monospace'
         }}
       >
         {displayText}
