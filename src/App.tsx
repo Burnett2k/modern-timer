@@ -7,6 +7,7 @@ import './App.css'
 
 function App() {
   const [timeRemaining, setTimeRemaining] = useState(25 * 60)
+  const [userSetDuration, setUserSetDuration] = useState(25 * 60)
   const [isCompleted, setIsCompleted] = useState(false)
   const [status, setStatus] = useState<TimerStatus>(TimerStatus.STOPPED)
   const timerManagerRef = useRef<TimerManager | null>(null)
@@ -33,7 +34,10 @@ function App() {
 
   const handleStart = () => {
     if (timerManagerRef.current) {
-      timerManagerRef.current.startTimer()
+      const hours = Math.floor(timeRemaining / 3600);
+      const minutes = Math.floor((timeRemaining % 3600) / 60);
+      const seconds = timeRemaining % 60;
+      timerManagerRef.current.startTimer({ hours, minutes, seconds })
       setStatus(TimerStatus.RUNNING)
       setIsCompleted(false)
     }
@@ -48,19 +52,24 @@ function App() {
 
   const handleReset = () => {
     if (timerManagerRef.current) {
-      timerManagerRef.current.resetTimer()
+      const hours = Math.floor(userSetDuration / 3600);
+      const minutes = Math.floor((userSetDuration % 3600) / 60);
+      const seconds = userSetDuration % 60;
+      timerManagerRef.current.resetTimer({ hours, minutes, seconds })
       setStatus(TimerStatus.STOPPED)
-      setTimeRemaining(25 * 60)
+      setTimeRemaining(userSetDuration)
       setIsCompleted(false)
     }
   }
 
-  const handleToggleComplete = () => {
-    setIsCompleted(!isCompleted)
-  }
-
-  const handleAdjustTime = () => {
-    setTimeRemaining(prev => Math.max(0, prev - 60))
+  const handleTimeChange = (hours: number, minutes: number, seconds: number) => {
+    const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+    setTimeRemaining(totalSeconds);
+    setUserSetDuration(totalSeconds);
+    
+    if (timerManagerRef.current) {
+      timerManagerRef.current.setTimerDuration({ hours, minutes, seconds });
+    }
   }
 
   return (
@@ -69,7 +78,9 @@ function App() {
         <h1>Modern Timer</h1>
         <TimerDisplay 
           timeRemaining={timeRemaining} 
-          isCompleted={isCompleted} 
+          isCompleted={isCompleted}
+          status={status}
+          onTimeChange={handleTimeChange}
         />
         <TimerControls
           status={status}
@@ -77,14 +88,6 @@ function App() {
           onPause={handlePause}
           onReset={handleReset}
         />
-        <div style={{ marginTop: '20px' }}>
-          <button onClick={handleToggleComplete}>
-            {isCompleted ? 'Reset Timer' : 'Complete Timer'}
-          </button>
-          <button onClick={handleAdjustTime} style={{ marginLeft: '10px' }}>
-            -1 Minute
-          </button>
-        </div>
       </div>
     </>
   )

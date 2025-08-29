@@ -28,3 +28,19 @@
 - Verified accurate countdown timing (60-second test showed no drift)
 - Confirmed Start/Pause/Reset buttons work correctly
 - Validated state transitions using proper enum values
+
+## 2025-08-29 15:00
+
+### Inline Timer Editing and Bug Fixes
+- Implemented click-to-edit timer display with 3 input boxes (HH:MM:SS)
+- Added input validation to only allow numeric input (0-9)
+- Fixed major bug: timer now starts from user-set duration, not default 25 minutes
+- Fixed reset bug: timer resets to user's custom duration instead of hardcoded 25 minutes
+- Added keyboard shortcuts: Enter to save, Escape to cancel editing
+- Only allows editing when timer is stopped (proper state management)
+
+### Testing
+- Verified input validation prevents letter entry
+- Confirmed timer starts from correct user-set duration (e.g., 26 minutes)
+- Validated reset returns to user's custom time setting, not default
+- Tested inline editing workflow with keyboard shortcuts
