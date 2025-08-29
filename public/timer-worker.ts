@@ -32,16 +32,6 @@ interface TimerSettings {
   seconds?: number;
 }
 
-interface TimerPayload {
-  hours: number;
-  minutes: number;
-  seconds: number;
-  isRunning: boolean;
-  isPaused?: boolean;
-  isCompleted: boolean;
-  remainingSeconds: number;
-}
-
 interface WorkerMessage {
   type: keyof typeof MESSAGE_TYPES;
   payload?: TimerSettings;

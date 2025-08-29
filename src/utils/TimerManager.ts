@@ -1,4 +1,5 @@
-import { TimerState, TimerStatus } from '../types/timer';
+import type { TimerState } from '../types/timer';
+import { TimerStatus } from '../types/timer';
 
 const MESSAGE_TYPES = {
   START_TIMER: 'START_TIMER',

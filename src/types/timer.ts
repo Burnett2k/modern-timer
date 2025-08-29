@@ -13,8 +13,8 @@ export interface TimerSettings {
 }
 
 export enum TimerStatus {
-  STOPPED = 'stopped',
-  RUNNING = 'running',
-  PAUSED = 'paused',
-  COMPLETED = 'completed'
+  STOPPED = "stopped",
+  RUNNING = "running",
+  PAUSED = "paused",
+  COMPLETED = "completed",
 }
