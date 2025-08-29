@@ -53,8 +53,11 @@ export class TimerManager {
 
   private async initializeServiceWorker(): Promise<void> {
     try {
-      // Create worker from the TypeScript file (will be compiled)
-      this.serviceWorker = new Worker('/timer-worker.js');
+      // Use Vite's proper worker import syntax for TypeScript workers
+      this.serviceWorker = new Worker(
+        new URL('../workers/timer-worker.ts', import.meta.url),
+        { type: 'module' }
+      );
       
       this.serviceWorker.addEventListener('message', this.handleWorkerMessage.bind(this));
       this.serviceWorker.addEventListener('error', this.handleWorkerError.bind(this));
