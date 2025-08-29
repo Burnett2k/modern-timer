@@ -1,0 +1,4 @@
+- Got confused about directory structure. That should be more explicit when I set things up.
+- When Claude generates a bunch of code changes, I'm not sure how to give it inline feedback like a code review.
+- Seems to be disregarding my design document suggestions and such.
+- I don't like having to review a humongous file. Would be much better if I could interactively code this with Claude more like a pair programmer.
