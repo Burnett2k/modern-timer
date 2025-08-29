@@ -173,6 +173,39 @@ function App() {
     }
   }
 
+  // Basic keyboard shortcuts (F=start/pause, R=reset)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only handle shortcuts when not typing in an input field
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      switch (e.key.toLowerCase()) {
+        case 'f':
+          e.preventDefault();
+          if (status === TimerStatus.RUNNING) {
+            handlePause();
+          } else {
+            handleStart();
+          }
+          break;
+        case 'r':
+          // Only handle 'r' if no modifier keys are pressed (allow Cmd+R for browser refresh)
+          if (!e.metaKey && !e.ctrlKey) {
+            e.preventDefault();
+            handleReset();
+          }
+          break;
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [status, userSetDuration, timeRemaining]);
+
   return (
     <>
       <div>
