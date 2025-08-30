@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { TimerDisplay } from './components/TimerDisplay'
 import { TimerControls } from './components/TimerControls'
 import { SessionGoal } from './components/SessionGoal'
@@ -148,7 +148,7 @@ function App() {
     }
   }, [isMuted]);
 
-  const handleStart = () => {
+  const handleStart = useCallback(() => {
     if (timerManagerRef.current) {
       // If completed, reset to user's set duration before starting
       const durationToUse = isCompleted ? userSetDuration : timeRemaining;
@@ -164,16 +164,16 @@ function App() {
       setStatus(TimerStatus.RUNNING)
       setIsCompleted(false)
     }
-  }
+  }, [isCompleted, userSetDuration, timeRemaining])
 
-  const handlePause = () => {
+  const handlePause = useCallback(() => {
     if (timerManagerRef.current) {
       timerManagerRef.current.pauseTimer()
       setStatus(TimerStatus.PAUSED)
     }
-  }
+  }, [])
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     if (timerManagerRef.current) {
       const hours = Math.floor(userSetDuration / 3600);
       const minutes = Math.floor((userSetDuration % 3600) / 60);
@@ -183,7 +183,7 @@ function App() {
       setTimeRemaining(userSetDuration)
       setIsCompleted(false)
     }
-  }
+  }, [userSetDuration])
 
   const handleTimeChange = (hours: number, minutes: number, seconds: number) => {
     const totalSeconds = hours * 3600 + minutes * 60 + seconds;
