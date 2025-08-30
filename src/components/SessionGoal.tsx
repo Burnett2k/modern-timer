@@ -1,27 +1,34 @@
-import { useState, KeyboardEvent } from 'react';
+import { useState, KeyboardEvent, useEffect } from 'react';
 
 interface SessionGoalProps {
   goal: string;
   onGoalChange: (goal: string) => void;
+  isEditing?: boolean;
+  onEditingChange?: (isEditing: boolean) => void;
 }
 
-export function SessionGoal({ goal, onGoalChange }: SessionGoalProps) {
-  const [isEditing, setIsEditing] = useState(false);
+export function SessionGoal({ goal, onGoalChange, isEditing = false, onEditingChange }: SessionGoalProps) {
   const [editText, setEditText] = useState('');
+
+  useEffect(() => {
+    if (isEditing) {
+      setEditText(goal);
+    }
+  }, [isEditing, goal]);
 
   const handleEditStart = () => {
     setEditText(goal);
-    setIsEditing(true);
+    onEditingChange?.(true);
   };
 
   const handleSave = () => {
     onGoalChange(editText.trim());
-    setIsEditing(false);
+    onEditingChange?.(false);
   };
 
   const handleCancel = () => {
     setEditText('');
-    setIsEditing(false);
+    onEditingChange?.(false);
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {

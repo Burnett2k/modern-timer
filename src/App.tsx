@@ -15,6 +15,7 @@ function App() {
   const [sessionGoal, setSessionGoal] = useState('')
   const [showTimeUp, setShowTimeUp] = useState(false)
   const [isInitialized, setIsInitialized] = useState(false)
+  const [isEditingGoal, setIsEditingGoal] = useState(false)
   const timerManagerRef = useRef<TimerManager | null>(null)
 
   // Load preferences and timer state on app start
@@ -190,6 +191,10 @@ function App() {
             handleStart();
           }
           break;
+        case 'e':
+          e.preventDefault();
+          setIsEditingGoal(true);
+          break;
         case 'r':
           // Only handle 'r' if no modifier keys are pressed (allow Cmd+R for browser refresh)
           if (!e.metaKey && !e.ctrlKey) {
@@ -213,6 +218,8 @@ function App() {
         <SessionGoal
           goal={sessionGoal}
           onGoalChange={setSessionGoal}
+          isEditing={isEditingGoal}
+          onEditingChange={setIsEditingGoal}
         />
         <TimerDisplay 
           timeRemaining={timeRemaining} 
