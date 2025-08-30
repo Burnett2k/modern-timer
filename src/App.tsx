@@ -2,8 +2,10 @@ import { useState, useEffect, useRef } from 'react'
 import { TimerDisplay } from './components/TimerDisplay'
 import { TimerControls } from './components/TimerControls'
 import { SessionGoal } from './components/SessionGoal'
+import { MuteControl } from './components/MuteControl'
 import { TimerStatus } from './types/timer'
 import { TimerManager } from './utils/TimerManager'
+import { SoundManager } from './utils/soundUtils'
 import { loadPreferences, savePreferences, loadTimerState, saveTimerState, clearTimerState } from './utils/localStorage'
 import './App.css'
 
@@ -16,7 +18,10 @@ function App() {
   const [showTimeUp, setShowTimeUp] = useState(false)
   const [isInitialized, setIsInitialized] = useState(false)
   const [isEditingGoal, setIsEditingGoal] = useState(false)
+  const [isEditingTime, setIsEditingTime] = useState(false)
+  const [isMuted, setIsMuted] = useState(false)
   const timerManagerRef = useRef<TimerManager | null>(null)
+  const soundManagerRef = useRef<SoundManager | null>(null)
 
   // Load preferences and timer state on app start
   useEffect(() => {
@@ -37,9 +42,13 @@ function App() {
       setSessionGoal(preferences.sessionGoal);
     }
     
+    // Set mute state from preferences
+    setIsMuted(preferences.isMuted || false);
+    
     setIsInitialized(true);
     
     const timerManager = new TimerManager()
+    const soundManager = new SoundManager()
     
     timerManager.onTick((state) => {
       const totalSeconds = state.hours * 3600 + state.minutes * 60 + state.seconds
@@ -49,12 +58,17 @@ function App() {
     timerManager.onComplete(() => {
       setIsCompleted(true)
       setStatus(TimerStatus.COMPLETED)
+      // Play completion sound
+      soundManager.playCompletionSound()
     })
+
+    soundManagerRef.current = soundManager
 
     timerManagerRef.current = timerManager
 
     return () => {
       timerManager.destroy()
+      soundManager.destroy()
     }
   }, [])
 
@@ -122,10 +136,17 @@ function App() {
       savePreferences({
         preferredDurationSeconds: userSetDuration,
         sessionGoal,
-        isMuted: false // TODO: implement mute functionality
+        isMuted
       });
     }
-  }, [userSetDuration, sessionGoal, isInitialized]);
+  }, [userSetDuration, sessionGoal, isMuted, isInitialized]);
+
+  // Update sound manager when mute state changes
+  useEffect(() => {
+    if (soundManagerRef.current) {
+      soundManagerRef.current.setMuted(isMuted);
+    }
+  }, [isMuted]);
 
   const handleStart = () => {
     if (timerManagerRef.current) {
@@ -174,6 +195,10 @@ function App() {
     }
   }
 
+  const handleMuteToggle = () => {
+    setIsMuted(prev => !prev);
+  }
+
   // Basic keyboard shortcuts (F=start/pause, R=reset)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -195,6 +220,10 @@ function App() {
           e.preventDefault();
           setIsEditingGoal(true);
           break;
+        case 't':
+          e.preventDefault();
+          setIsEditingTime(true);
+          break;
         case 'r':
           // Only handle 'r' if no modifier keys are pressed (allow Cmd+R for browser refresh)
           if (!e.metaKey && !e.ctrlKey) {
@@ -209,7 +238,7 @@ function App() {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [status, userSetDuration, timeRemaining]);
+  }, [status, userSetDuration, timeRemaining, handleStart, handlePause, handleReset]);
 
   return (
     <>
@@ -228,12 +257,18 @@ function App() {
           showTimeUp={showTimeUp}
           onTimeChange={handleTimeChange}
           onPause={handlePause}
+          isEditing={isEditingTime}
+          onEditingChange={setIsEditingTime}
         />
         <TimerControls
           status={status}
           onStart={handleStart}
           onPause={handlePause}
           onReset={handleReset}
+        />
+        <MuteControl
+          isMuted={isMuted}
+          onToggle={handleMuteToggle}
         />
       </div>
     </>

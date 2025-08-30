@@ -1,4 +1,4 @@
-import { useState, KeyboardEvent } from 'react';
+import { useState, KeyboardEvent, useEffect } from 'react';
 import { TimerStatus } from '../types/timer';
 
 interface TimerDisplayProps {
@@ -8,13 +8,23 @@ interface TimerDisplayProps {
   showTimeUp: boolean;
   onTimeChange?: (hours: number, minutes: number, seconds: number) => void;
   onPause?: () => void;
+  isEditing?: boolean;
+  onEditingChange?: (isEditing: boolean) => void;
 }
 
-export function TimerDisplay({ timeRemaining, isCompleted, status, showTimeUp, onTimeChange, onPause }: TimerDisplayProps) {
-  const [isEditing, setIsEditing] = useState(false);
+export function TimerDisplay({ timeRemaining, isCompleted, status, showTimeUp, onTimeChange, onPause, isEditing = false, onEditingChange }: TimerDisplayProps) {
   const [editHours, setEditHours] = useState('00');
   const [editMinutes, setEditMinutes] = useState('25');
   const [editSeconds, setEditSeconds] = useState('00');
+
+  useEffect(() => {
+    if (isEditing) {
+      const { hours, minutes, secs } = getTimeComponents(timeRemaining);
+      setEditHours(hours.toString().padStart(2, '0'));
+      setEditMinutes(minutes.toString().padStart(2, '0'));
+      setEditSeconds(secs.toString().padStart(2, '0'));
+    }
+  }, [isEditing, timeRemaining]);
 
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
@@ -41,7 +51,7 @@ export function TimerDisplay({ timeRemaining, isCompleted, status, showTimeUp, o
     setEditHours(hours.toString().padStart(2, '0'));
     setEditMinutes(minutes.toString().padStart(2, '0'));
     setEditSeconds(secs.toString().padStart(2, '0'));
-    setIsEditing(true);
+    onEditingChange?.(true);
   };
 
   const handleSave = () => {
@@ -52,11 +62,11 @@ export function TimerDisplay({ timeRemaining, isCompleted, status, showTimeUp, o
     if (onTimeChange) {
       onTimeChange(h, m, s);
     }
-    setIsEditing(false);
+    onEditingChange?.(false);
   };
 
   const handleCancel = () => {
-    setIsEditing(false);
+    onEditingChange?.(false);
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
