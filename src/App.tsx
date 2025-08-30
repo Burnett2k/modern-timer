@@ -220,6 +220,7 @@ function App() {
           status={status}
           showTimeUp={showTimeUp}
           onTimeChange={handleTimeChange}
+          onPause={handlePause}
         />
         <TimerControls
           status={status}

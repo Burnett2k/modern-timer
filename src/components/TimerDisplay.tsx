@@ -7,9 +7,10 @@ interface TimerDisplayProps {
   status: TimerStatus;
   showTimeUp: boolean;
   onTimeChange?: (hours: number, minutes: number, seconds: number) => void;
+  onPause?: () => void;
 }
 
-export function TimerDisplay({ timeRemaining, isCompleted, status, showTimeUp, onTimeChange }: TimerDisplayProps) {
+export function TimerDisplay({ timeRemaining, isCompleted, status, showTimeUp, onTimeChange, onPause }: TimerDisplayProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editHours, setEditHours] = useState('00');
   const [editMinutes, setEditMinutes] = useState('25');
@@ -31,13 +32,16 @@ export function TimerDisplay({ timeRemaining, isCompleted, status, showTimeUp, o
 
 
   const handleDisplayClick = () => {
-    if (status === TimerStatus.STOPPED && !isCompleted) {
-      const { hours, minutes, secs } = getTimeComponents(timeRemaining);
-      setEditHours(hours.toString().padStart(2, '0'));
-      setEditMinutes(minutes.toString().padStart(2, '0'));
-      setEditSeconds(secs.toString().padStart(2, '0'));
-      setIsEditing(true);
+    // Pause timer if it's running
+    if (status === TimerStatus.RUNNING && onPause) {
+      onPause();
     }
+    
+    const { hours, minutes, secs } = getTimeComponents(timeRemaining);
+    setEditHours(hours.toString().padStart(2, '0'));
+    setEditMinutes(minutes.toString().padStart(2, '0'));
+    setEditSeconds(secs.toString().padStart(2, '0'));
+    setIsEditing(true);
   };
 
   const handleSave = () => {
@@ -107,15 +111,13 @@ export function TimerDisplay({ timeRemaining, isCompleted, status, showTimeUp, o
     );
   }
 
-  const isEditable = status === TimerStatus.STOPPED && !isCompleted;
-
   return (
     <div className="timer-display">
       <div 
         className="time-text" 
         onClick={handleDisplayClick}
         style={{ 
-          cursor: isEditable ? 'pointer' : 'default',
+          cursor: 'pointer',
           fontSize: '48px',
           fontFamily: 'monospace'
         }}
