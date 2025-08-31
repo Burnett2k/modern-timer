@@ -1,5 +1,20 @@
 # Changelog
 
+## 2025-08-31 16:45
+
+### Test Infrastructure and Worker Utility Extraction
+- Fixed TimerManager test failures by extracting worker creation into separate utility function
+- Created workerUtils.ts to isolate import.meta.url usage for easy mocking in tests
+- Resolved Jest import.meta.url compatibility issues without adding external dependencies
+- All 19 TimerManager unit tests now pass successfully
+- Maintained clean separation of concerns between production and test code
+
+### Testing
+- Verified all existing TimerManager unit tests pass with new worker utility approach
+- Confirmed production functionality remains unchanged with worker extraction
+- Validated Jest test environment properly mocks worker creation
+- Tested lint and build processes pass with zero warnings or errors
+
 ## 2025-08-29 14:35
 
 ### Initial Timer Foundation

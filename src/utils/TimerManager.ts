@@ -1,5 +1,6 @@
 import type { TimerState } from '../types/timer';
 import { TimerStatus } from '../types/timer';
+import { createTimerWorker } from './workerUtils';
 
 const MESSAGE_TYPES = {
   START_TIMER: 'START_TIMER',
@@ -53,11 +54,7 @@ export class TimerManager {
 
   private async initializeServiceWorker(): Promise<void> {
     try {
-      // Use Vite's proper worker import syntax for TypeScript workers
-      this.serviceWorker = new Worker(
-        new URL('../workers/timer-worker.ts', import.meta.url),
-        { type: 'module' }
-      );
+      this.serviceWorker = createTimerWorker();
       
       this.serviceWorker.addEventListener('message', this.handleWorkerMessage.bind(this));
       this.serviceWorker.addEventListener('error', this.handleWorkerError.bind(this));

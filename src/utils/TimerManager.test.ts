@@ -1,6 +1,11 @@
 import { TimerManager } from "./TimerManager";
 import { TimerStatus } from "../types/timer";
 
+// Mock the worker utility
+jest.mock('./workerUtils', () => ({
+  createTimerWorker: jest.fn()
+}));
+
 interface MockWorkerMessage {
   type: string;
   payload?: unknown;
@@ -51,26 +56,21 @@ class MockWorker {
   }
 }
 
-// Mock global Worker
-const originalWorker = global.Worker;
-beforeAll(() => {
-  global.Worker = MockWorker as unknown as typeof Worker;
-});
-
-afterAll(() => {
-  global.Worker = originalWorker;
-});
+// Import the mocked function
+import { createTimerWorker } from './workerUtils';
+const mockCreateTimerWorker = createTimerWorker as jest.MockedFunction<typeof createTimerWorker>;
 
 describe("TimerManager", () => {
   let timerManager: TimerManager;
   let mockWorker: MockWorker;
 
   beforeEach(async () => {
+    mockWorker = new MockWorker('/timer-worker.js');
+    mockCreateTimerWorker.mockReturnValue(mockWorker as unknown as Worker);
+    
     timerManager = new TimerManager();
     // Wait for initialization
     await new Promise((resolve) => setTimeout(resolve, 0));
-    mockWorker = (timerManager as unknown as { serviceWorker: MockWorker })
-      .serviceWorker;
   });
 
   afterEach(() => {
