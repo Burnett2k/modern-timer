@@ -1,10 +1,18 @@
 # Modern Timer - Claude Context
 
+## Environment
+
+- **Node.js Version**: 20.19.0 (defined in `.nvmrc`)
+- **Package Manager**: npm
+
 ## Key Commands
 
 - `npm run lint` - Must pass with zero warnings before commits
 - `npm run build` - Must succeed before commits
 - `npm run dev` - Development server
+- `npm test` - Unit tests (29 tests)
+- `npm run test:visual` - Visual regression tests
+- `npm run test:coverage` - Test coverage report
 
 ## Project Standards
 
