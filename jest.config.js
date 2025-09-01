@@ -19,6 +19,12 @@ export default {
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', {
       useESM: true,
+      tsconfig: {
+        jsx: 'react-jsx',
+        module: 'esnext',
+        target: 'es2020',
+        esModuleInterop: true
+      }
     }],
   },
 };
