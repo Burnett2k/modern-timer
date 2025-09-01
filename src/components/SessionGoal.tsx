@@ -70,19 +70,9 @@ export function SessionGoal({ goal, onGoalChange, isEditing = false, onEditingCh
           onClick={handleEditStart}
           style={{
             cursor: 'pointer',
-            border: '1px dashed #ccc',
+            border: '1px dashed',
             borderRadius: '4px',
-            padding: '8px 12px',
-            backgroundColor: '#f9f9f9',
-            transition: 'all 0.2s ease'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#f0f0f0';
-            e.currentTarget.style.borderColor = '#999';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#f9f9f9';
-            e.currentTarget.style.borderColor = '#ccc';
+            padding: '8px 12px'
           }}
         >
           <p className="goal-text" style={{ margin: '0', fontSize: '14px' }}>
@@ -95,23 +85,10 @@ export function SessionGoal({ goal, onGoalChange, isEditing = false, onEditingCh
           onClick={handleEditStart}
           style={{
             cursor: 'pointer',
-            border: '1px dashed #bbb',
+            border: '1px dashed',
             borderRadius: '4px',
             padding: '12px 16px',
-            backgroundColor: '#fafafa',
-            textAlign: 'center',
-            color: '#666',
-            transition: 'all 0.2s ease'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#f0f0f0';
-            e.currentTarget.style.borderColor = '#999';
-            e.currentTarget.style.color = '#333';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#fafafa';
-            e.currentTarget.style.borderColor = '#bbb';
-            e.currentTarget.style.color = '#666';
+            textAlign: 'center'
           }}
         >
           <span>Click to set session goal</span>

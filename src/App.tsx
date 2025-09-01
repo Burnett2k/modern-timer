@@ -3,6 +3,7 @@ import { TimerDisplay } from './components/TimerDisplay'
 import { TimerControls } from './components/TimerControls'
 import { SessionGoal } from './components/SessionGoal'
 import { MuteControl } from './components/MuteControl'
+import { ThemeToggle } from './components/ThemeToggle'
 import { TimerStatus } from './types/timer'
 import { TimerManager } from './utils/TimerManager'
 import { SoundManager } from './utils/soundUtils'
@@ -20,8 +21,24 @@ function App() {
   const [isEditingGoal, setIsEditingGoal] = useState(false)
   const [isEditingTime, setIsEditingTime] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
+  const [isDarkMode, setIsDarkMode] = useState(false)
   const timerManagerRef = useRef<TimerManager | null>(null)
   const soundManagerRef = useRef<SoundManager | null>(null)
+
+  // Initialize theme on app start
+  useEffect(() => {
+    // Check if user has a saved theme preference
+    const savedTheme = localStorage.getItem('theme-preference');
+    if (savedTheme) {
+      setIsDarkMode(savedTheme === 'dark');
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    } else {
+      // Use system preference
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setIsDarkMode(prefersDark);
+      document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+    }
+  }, []);
 
   // Load preferences and timer state on app start
   useEffect(() => {
@@ -199,6 +216,16 @@ function App() {
     setIsMuted(prev => !prev);
   }
 
+  const handleThemeToggle = () => {
+    setIsDarkMode(prev => {
+      const newTheme = !prev;
+      const themeValue = newTheme ? 'dark' : 'light';
+      localStorage.setItem('theme-preference', themeValue);
+      document.documentElement.setAttribute('data-theme', themeValue);
+      return newTheme;
+    });
+  }
+
   // Basic keyboard shortcuts (F=start/pause, R=reset)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -242,6 +269,17 @@ function App() {
 
   return (
     <>
+      <div className="utilities-corner">
+        <MuteControl
+          isMuted={isMuted}
+          onToggle={handleMuteToggle}
+        />
+        <ThemeToggle
+          isDark={isDarkMode}
+          onToggle={handleThemeToggle}
+        />
+      </div>
+      
       <div>
         <h1>Modern Timer</h1>
         <SessionGoal
@@ -265,10 +303,6 @@ function App() {
           onStart={handleStart}
           onPause={handlePause}
           onReset={handleReset}
-        />
-        <MuteControl
-          isMuted={isMuted}
-          onToggle={handleMuteToggle}
         />
       </div>
     </>
